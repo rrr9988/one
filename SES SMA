@@ -1,0 +1,87 @@
+#2
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+data = pd.read_csv("airline-passengers (1).csv", parse_dates=['Month'], index_col='Month')
+data.index.freq = 'MS'
+
+train_size = int(len(data) * 0.8)  # 80% for training, 20% for testing
+train = data.iloc[:train_size]
+test = data.iloc[train_size:]
+
+plt.figure(figsize=(10, 6))
+plt.plot(train['Passengers'], label='Training data')
+plt.plot(test['Passengers'], label='Testing data')
+plt.title('Train-Test Split of Airline Passengers Dataset')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.show()
+
+window_size = 12
+sma = train['Passengers'].rolling(window=window_size).mean()
+
+
+sma_forecast = pd.Series(sma.iloc[-1], index=test.index)  # Using the last SMA value for forecasting
+
+plt.figure(figsize=(10, 6))
+plt.plot(train['Passengers'], label='Training data')
+plt.plot(test['Passengers'], label='Testing data')
+plt.plot(sma_forecast, label='SMA Forecast', linestyle='--', color='orange')
+plt.title('Simple Moving Average (SMA) Forecast')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.show()
+
+sma_mae = mean_absolute_error(test['Passengers'], sma_forecast)
+sma_mse = mean_squared_error(test['Passengers'], sma_forecast)
+sma_rmse = np.sqrt(sma_mse)
+
+print(f'SMA Forecast - MAE: {sma_mae}, MSE: {sma_mse}, RMSE: {sma_rmse}')
+
+ses_model = SimpleExpSmoothing(train['Passengers']).fit(smoothing_level=0.2, optimized=False)
+
+
+ses_forecast = ses_model.forecast(len(test))
+
+plt.figure(figsize=(10, 6))
+plt.plot(train['Passengers'], label='Training data')
+plt.plot(test['Passengers'], label='Testing data')
+plt.plot(ses_forecast, label='SES Forecast', linestyle='--', color='orange')
+plt.title('Simple Exponential Smoothing (SES) Forecast')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.show()
+
+ses_mae = mean_absolute_error(test['Passengers'], ses_forecast)
+ses_mse = mean_squared_error(test['Passengers'], ses_forecast)
+ses_rmse = np.sqrt(ses_mse)
+
+print(f'SES Forecast - MAE: {ses_mae}, MSE: {ses_mse}, RMSE: {ses_rmse}')
+
+hw_model = ExponentialSmoothing(train['Passengers'], seasonal='add', seasonal_periods=12).fit()
+
+hw_forecast = hw_model.forecast(len(test))
+
+plt.figure(figsize=(10, 6))
+plt.plot(train['Passengers'], label='Training data')
+plt.plot(test['Passengers'], label='Testing data')
+plt.plot(hw_forecast, label='Holt-Winters Forecast', linestyle='--', color='orange')
+plt.title('Exponential Smoothing (Holt-Winters) Forecast')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.show()
+hw_mae = mean_absolute_error(test['Passengers'], hw_forecast)
+hw_mse = mean_squared_error(test['Passengers'], hw_forecast)
+hw_rmse = np.sqrt(hw_mse)
+
+print(f'Holt-Winters Forecast - MAE: {hw_mae}, MSE: {hw_mse}, RMSE: {hw_rmse}')
+
+
