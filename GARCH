@@ -1,0 +1,43 @@
+ import yfinance as yf
+ import numpy as np
+ import pandas as pd
+ import matplotlib.pyplot as plt
+ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+ from arch import arch_model
+ from statsmodels.tsa.stattools import acf, pacf
+ # Fetching data
+ ticker = 'AAPL'  # You can change the ticker to any stock of your choice
+ data = yf.download(ticker, start="2020-01-01", end="2023-01-01")
+ returns = 100 * data['Adj Close'].pct_change().dropna()
+ # Plotting ACF and PACF
+ fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+ # ACF
+ plot_acf(returns, lags=40, ax=axes[0])
+ axes[0].set_title('ACF of Returns')
+ # PACF
+ plot_pacf(returns, lags=40, ax=axes[1])
+ axes[1].set_title('PACF of Returns')
+ plt.show()
+# Determine the order of p and q from the plots
+ # Let's assume from the plots we determined p=1 (from PACF) and q=1 (from ACF)
+ # Fitting the GARCH model
+ model = arch_model(returns, vol='Garch', p=1, q=1)
+ model_fitted = model.fit(disp='off')
+ print(model_fitted.summary())
+ # Evaluating the model performance
+ # Plotting the conditional volatility
+ fig, ax = plt.subplots(figsize=(10, 5))
+ ax.plot(model_fitted.conditional_volatility, label='Conditional Volatility')
+ ax.set_title('Conditional Volatility from the GARCH Model')
+ ax.legend()
+ plt.show()
+ # Optional: Checking the residuals
+ residuals = model_fitted.resid
+ fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+ # ACF of Residuals
+ plot_acf(residuals, lags=40, ax=axes[0])
+ axes[0].set_title('ACF of Residuals')
+ # PACF of Residuals
+ plot_pacf(residuals, lags=40, ax=axes[1])
+ axes[1].set_title('PACF of Residuals')
+ plt.show()
