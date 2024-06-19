@@ -1,0 +1,96 @@
+import pandas as pd
+ import matplotlib.pyplot as plt
+ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+ from statsmodels.tsa.ar_model import AutoReg
+ from sklearn.metrics import mean_absolute_error, mean_squared_error
+ import numpy as np
+ # Load the Air Passenger dataset
+ url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'
+ df = pd.read_csv(url)
+ # Convert the 'Month' column to datetime
+ df['Month'] = pd.to_datetime(df['Month'])
+ # Set the 'Month' column as the index
+ df.set_index('Month', inplace=True)
+ # Plot the time series data
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('Monthly Number of Air Passengers')
+ plt.legend()
+ plt.show()
+
+ # Plot ACF
+ plt.figure(figsize=(10, 5))
+ plot_acf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+ plt.ylabel('Autocorrelation')
+ plt.title('Autocorrelation Function (ACF)')
+ plt.show()
+ # Plot PACF
+ plt.figure(figsize=(10, 5))
+ plot_pacf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+ plt.ylabel('Partial Autocorrelation')
+plt.title('Partial Autocorrelation Function (PACF)')
+ plt.show()
+
+:
+ # Fit AR(1) model
+ model_ar1 = AutoReg(df['Passengers'], lags=1).fit()
+ predictions_ar1 = model_ar1.predict(start=len(df), end=len(df)+11, dynamic=False)
+ # Plot AR(1) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ar1.index, predictions_ar1, label='AR(1) Predictions', color='red')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('AR(1) Model Predictions')
+plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for AR(1)
+ ar1_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ar1)
+ ar1_mse = mean_squared_error(df['Passengers'][-12:], predictions_ar1)
+ ar1_rmse = np.sqrt(ar1_mse)
+ print(f'AR(1) MAE: {ar1_mae:.2f}')
+ print(f'AR(1) MSE: {ar1_mse:.2f}')
+ print(f'AR(1) RMSE: {ar1_rmse:.2f}')
+
+ # Fit AR(2) model
+ model_ar2 = AutoReg(df['Passengers'], lags=2).fit()
+ predictions_ar2 = model_ar2.predict(start=len(df), end=len(df)+11, dynamic=False)
+ # Plot AR(2) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ar2.index, predictions_ar2, label='AR(2) Predictions', color='green')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('AR(2) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for AR(2)
+ ar2_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ar2)
+ ar2_mse = mean_squared_error(df['Passengers'][-12:], predictions_ar2)
+ar2_rmse = np.sqrt(ar2_mse)
+ print(f'AR(2) MAE: {ar2_mae:.2f}')
+ print(f'AR(2) MSE: {ar2_mse:.2f}')
+ print(f'AR(2) RMSE: {ar2_rmse:.2f}')
+ # Fit AR(3) model
+ model_ar3 = AutoReg(df['Passengers'], lags=3).fit()
+ predictions_ar3 = model_ar3.predict(start=len(df), end=len(df)+11, dynamic=False)
+ # Plot AR(3) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ar3.index, predictions_ar3, label='AR(3) Predictions', color='purple')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('AR(3) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for AR(3)
+ ar3_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ar3)
+ ar3_mse = mean_squared_error(df['Passengers'][-12:], predictions_ar3)
+ ar3_rmse = np.sqrt(ar3_mse)
+ print(f'AR(3) MAE: {ar3_mae:.2f}')
+ print(f'AR(3) MSE: {ar3_mse:.2f}')
+ print(f'AR(3) RMSE: {ar3_rmse:.2f}')
