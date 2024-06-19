@@ -1,0 +1,85 @@
+ import pandas as pd
+ import matplotlib.pyplot as plt
+ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+ # Load the Air Passenger dataset
+ url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'
+ df = pd.read_csv(url)
+ # Convert the 'Month' column to datetime
+ df['Month'] = pd.to_datetime(df['Month'])
+ # Set the 'Month' column as the index
+ df.set_index('Month', inplace=True)
+ # Plot ACF
+ plt.figure(figsize=(10, 5))
+ plot_acf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+plt.ylabel('Autocorrelation')
+ plt.title('Autocorrelation Function (ACF)')
+ plt.show()
+ # Plot PACF
+ plt.figure(figsize=(10, 5))
+ plot_pacf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+ plt.ylabel('Partial Autocorrelation')
+ plt.title('Partial Autocorrelation Function (PACF)')
+ plt.show()
+
+ from statsmodels.tsa.arima.model import ARIMA
+ from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+ # Fit MA(1) model
+ model_ma1 = ARIMA(df['Passengers'], order=(0, 0, 1)).fit()
+ predictions_ma1 = model_ma1.forecast(steps=12)
+ # Plot MA(1) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ma1.index, predictions_ma1, label='MA(1) Predictions', color='red')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('MA(1) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for MA(1)
+ ma1_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ma1)
+ ma1_mse = mean_squared_error(df['Passengers'][-12:], predictions_ma1)
+ ma1_rmse = np.sqrt(ma1_mse)
+ print(f'MA(1) MAE: {ma1_mae:.2f}')
+ print(f'MA(1) MSE: {ma1_mse:.2f}')
+ print(f'MA(1) RMSE: {ma1_rmse:.2f}')
+
+ model_ma2 = ARIMA(df['Passengers'], order=(0, 0, 2)).fit()
+ predictions_ma2 = model_ma2.forecast(steps=12)
+ # Plot MA(2) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ma2.index, predictions_ma2, label='MA(2) Predictions', color='green')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('MA(2) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for MA(2)
+ ma2_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ma2)
+ ma2_mse = mean_squared_error(df['Passengers'][-12:], predictions_ma2)
+ ma2_rmse = np.sqrt(ma2_mse)
+ print(f'MA(2) MAE: {ma2_mae:.2f}')
+ print(f'MA(2) MSE: {ma2_mse:.2f}')
+ print(f'MA(2) RMSE: {ma2_rmse:.2f}')
+ # Fit MA(3) model
+ model_ma3 = ARIMA(df['Passengers'], order=(0, 0, 3)).fit()
+ predictions_ma3 = model_ma3.forecast(steps=12)
+ # Plot MA(3) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_ma3.index, predictions_ma3, label='MA(3) Predictions', color='purple')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('MA(3) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for MA(3)
+ ma3_mae = mean_absolute_error(df['Passengers'][-12:], predictions_ma3)
+ ma3_mse = mean_squared_error(df['Passengers'][-12:], predictions_ma3)
+ ma3_rmse = np.sqrt(ma3_mse)
+ print(f'MA(3) MAE: {ma3_mae:.2f}')
+ print(f'MA(3) MSE: {ma3_mse:.2f}')
+ print(f'MA(3) RMSE: {ma3_rmse:.2f}')
