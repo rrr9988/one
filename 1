@@ -1,0 +1,21 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+data=pd.read_csv("yahoo_stock - yahoo_stock.csv")
+data.head(10)
+ts_data=data.iloc[:,[0,3]]
+ts_data
+summary_stats=ts_data['Open'].describe()
+print(summary_stats)
+ts_data.isnull().sum()
+ts_data["Date"]=pd.to_datetime(ts_data["Date"],format="%Y-%m-%d")
+ts_data["Date"]
+ts_data.set_index('Date',inplace=True)
+plt.plot(ts_data.index,ts_data['Open'],label="Opening stock prices")
+plt.xlabel("Date")
+plt.ylabel("Stock prices")
+plt.legend()
+plt.show()
+from statsmodels.tsa.seasonal import seasonal_decompose
+Decompose=seasonal_decompose(data["Open"],model="multiplicative",period=365)
+Decompose.plot()
+plt.show()
