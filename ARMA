@@ -1,0 +1,88 @@
+:
+ import pandas as pd
+ import matplotlib.pyplot as plt
+ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+ # Load the Air Passenger dataset
+ url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'
+ df = pd.read_csv(url)
+ # Convert the 'Month' column to datetime
+ df['Month'] = pd.to_datetime(df['Month'])
+ # Set the 'Month' column as the index
+ df.set_index('Month', inplace=True)
+ # Plot ACF
+ plt.figure(figsize=(10, 5))
+ plot_acf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+ plt.ylabel('Autocorrelation')
+ plt.title('Autocorrelation Function (ACF)')
+ plt.show()
+ # Plot PACF
+ plt.figure(figsize=(10, 5))
+ plot_pacf(df['Passengers'], lags=40, ax=plt.gca())
+ plt.xlabel('Lags')
+ plt.ylabel('Partial Autocorrelation')
+ plt.title('Partial Autocorrelation Function (PACF)')
+ plt.show()
+
+:
+ from statsmodels.tsa.arima.model import ARIMA
+ from sklearn.metrics import mean_absolute_error, mean_squared_error
+ import numpy as np
+ # Fit ARMA(1,1) model
+ model_arma11 = ARIMA(df['Passengers'], order=(1, 0, 1)).fit()
+ predictions_arma11 = model_arma11.forecast(steps=12)
+ # Plot ARMA(1,1) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_arma11.index, predictions_arma11, label='ARMA(1,1) Predictions', color='red')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+plt.title('ARMA(1,1) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for ARMA(1,1)
+ arma11_mae = mean_absolute_error(df['Passengers'][-12:], predictions_arma11)
+ arma11_mse = mean_squared_error(df['Passengers'][-12:], predictions_arma11)
+ arma11_rmse = np.sqrt(arma11_mse)
+ print(f'ARMA(1,1) MAE: {arma11_mae:.2f}')
+ print(f'ARMA(1,1) MSE: {arma11_mse:.2f}')
+ print(f'ARMA(1,1) RMSE: {arma11_rmse:.2f}')
+
+ # Fit ARMA(2,2) model
+ model_arma22 = ARIMA(df['Passengers'], order=(2, 0, 2)).fit()
+ predictions_arma22 = model_arma22.forecast(steps=12)
+ # Plot ARMA(2,2) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_arma22.index, predictions_arma22, label='ARMA(2,2) Predictions', color='green')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('ARMA(2,2) Model Predictions')
+ plt.legend()
+ plt.show()
+# Calculate evaluation metrics for ARMA(2,2)
+ arma22_mae = mean_absolute_error(df['Passengers'][-12:], predictions_arma22)
+ arma22_mse = mean_squared_error(df['Passengers'][-12:], predictions_arma22)
+ arma22_rmse = np.sqrt(arma22_mse)
+ print(f'ARMA(2,2) MAE: {arma22_mae:.2f}')
+ print(f'ARMA(2,2) MSE: {arma22_mse:.2f}')
+ print(f'ARMA(2,2) RMSE: {arma22_rmse:.2f}')
+ # Fit ARMA(3,3) model
+ model_arma33 = ARIMA(df['Passengers'], order=(3, 0, 3)).fit()
+ predictions_arma33 = model_arma33.forecast(steps=12)
+ # Plot ARMA(3,3) predictions
+ plt.figure(figsize=(10, 5))
+ plt.plot(df.index, df['Passengers'], label='Passengers')
+ plt.plot(predictions_arma33.index, predictions_arma33, label='ARMA(3,3) Predictions', color='purple')
+ plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('ARMA(3,3) Model Predictions')
+ plt.legend()
+ plt.show()
+ # Calculate evaluation metrics for ARMA(3,3)
+ arma33_mae = mean_absolute_error(df['Passengers'][-12:], predictions_arma33)
+ arma33_mse = mean_squared_error(df['Passengers'][-12:], predictions_arma33)
+ arma33_rmse = np.sqrt(arma33_mse)
+ print(f'ARMA(3,3) MAE: {arma33_mae:.2f}')
+ print(f'ARMA(3,3) MSE: {arma33_mse:.2f}')
+ print(f'ARMA(3,3) RMSE: {arma33_rmse:.2f}')
