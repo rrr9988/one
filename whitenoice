@@ -1,0 +1,66 @@
+ import numpy as np
+ import pandas as pd
+ import matplotlib.pyplot as plt
+ # Load the Air Passenger dataset
+ url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'
+ df = pd.read_csv(url)
+# Generate white noise data
+ np.random.seed(42)  # For reproducibility
+ white_noise = np.random.normal(loc=0.0, scale=1.0, size=len(df))
+ # Create a DataFrame for the white noise data
+ white_noise_df = pd.DataFrame({'Month': df['Month'], 'WhiteNoise': white_noise})
+ # Convert the 'Month' column to datetime
+ white_noise_df['Month'] = pd.to_datetime(white_noise_df['Month'])
+ # Set the 'Month' column as the index
+ white_noise_df.set_index('Month', inplace=True)
+ # Plot the white noise data
+ plt.figure(figsize=(10, 5))
+ plt.plot(white_noise_df.index, white_noise_df['WhiteNoise'], label='White Noise')
+ plt.xlabel('Time')
+ plt.ylabel('Value')
+ plt.title('White Noise Data')
+ plt.legend()
+ plt.show()
+ # Plot both the white noise and the time series data
+ plt.figure(figsize=(14, 7))
+ # Plot white noise
+ plt.subplot(2, 1, 1)
+ plt.plot(white_noise_df.index, white_noise_df['WhiteNoise'], label='White Noise')
+ plt.xlabel('Time')
+ plt.ylabel('Value')
+ plt.title('White Noise Data')
+ plt.legend()
+ # Plot Air Passenger time series data
+ plt.subplot(2, 1, 2)
+ plt.plot(df['Month'], df['Passengers'], label='Air Passengers')
+plt.xlabel('Time')
+ plt.ylabel('Number of Passengers')
+ plt.title('Monthly Number of Air Passengers')
+ plt.legend()
+ plt.tight_layout()
+ plt.show()
+ from statsmodels.tsa.stattools import adfuller, kpss
+ # Augmented Dickey-Fuller Test
+ def adf_test(series):
+ result = adfuller(series)
+ print('ADF Statistic:', result[0])
+ print('p-value:', result[1])
+ for key, value in result[4].items():
+ print('Critical Values:')
+ print(f'   {key}, {value}')
+ # KPSS Test
+ def kpss_test(series):
+ result = kpss(series, regression='c')
+ print('KPSS Statistic:', result[0])
+ print('p-value:', result[1])
+ for key, value in result[3].items():
+ print('Critical Values:')
+ print(f'   {key}, {value}')
+ print("ADF Test for White Noise:")
+ adf_test(white_noise_df['WhiteNoise'])
+ print("\nKPSS Test for White Noise:")
+ kpss_test(white_noise_df['WhiteNoise'])
+ print("\nADF Test for Air Passengers:")
+ adf_test(df['Passengers'])
+ print("\nKPSS Test for Air Passengers:")
+ kpss_test(df['Passengers'])
